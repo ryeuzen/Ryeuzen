@@ -1,0 +1,12 @@
+# cipher — Python dependencies
+# Install: pip install -r requirements.txt
+
+# mitmproxy (WebSocket + HTTPS MITM)
+mitmproxy>=10.3.1
+
+# cert hash computation for android_setup.sh
+cryptography>=42.0.0
+
+# Phase 2: market matcher (install when ready)
+# rapidfuzz>=3.9.0
+# py-clob-client>=0.16.0
