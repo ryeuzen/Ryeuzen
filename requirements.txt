@@ -10,3 +10,9 @@ cryptography>=42.0.0
 # Phase 2: market matcher (install when ready)
 # rapidfuzz>=3.9.0
 # py-clob-client>=0.16.0
+
+# ── Trading bot ──────────────────────────────────────────────────────
+numpy>=1.26.0
+
+# TopstepX broker adapter (install from git):
+# pip install git+https://github.com/mceesincus/tsxapi4py.git

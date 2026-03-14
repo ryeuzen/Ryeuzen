@@ -341,10 +341,9 @@ class TradingBot:
 def parse_args():
     parser = argparse.ArgumentParser(
         description="ORB Trading Bot for Prop Firm Challenges")
-    parser.add_argument("--paper", action="store_true", default=True,
-                        help="Run in paper trading mode (default)")
-    parser.add_argument("--live", action="store_true",
-                        help="Run in live mode (requires broker config)")
+    parser.add_argument("--broker", default="paper",
+                        choices=["paper", "topstep"],
+                        help="Broker adapter (default: paper)")
     parser.add_argument("--symbol", default="MNQ",
                         choices=list(CONTRACTS.keys()),
                         help="Instrument to trade (default: MNQ)")
@@ -359,6 +358,10 @@ def parse_args():
                         help="Max range size in points to trade")
     parser.add_argument("--min-range", type=float, default=3.0,
                         help="Min range size in points to trade")
+    parser.add_argument("--contract-id", default=None,
+                        help="TopstepX contract ID (e.g. CON.F.US.MNQ.M25)")
+    parser.add_argument("--account-id", type=int, default=None,
+                        help="TopstepX account ID (auto-detects if omitted)")
     return parser.parse_args()
 
 
@@ -375,16 +378,18 @@ async def main():
 
     phase = Phase.FUNDED if args.phase == "funded" else Phase.CHALLENGE
 
-    if args.live:
-        log.error("Live broker adapters not yet implemented. "
-                  "Use --paper for dry-run testing.")
-        sys.exit(1)
-
-    broker = PaperBroker(
-        initial_equity=cfg.ACCOUNT_SIZE,
-        tick_value=CONTRACTS[args.symbol]["tick_value"],
-        tick_size=CONTRACTS[args.symbol]["tick_size"],
-    )
+    if args.broker == "topstep":
+        from broker_topstep import TopstepBroker
+        broker = TopstepBroker(
+            contract_id=args.contract_id,
+            account_id=args.account_id,
+        )
+    else:
+        broker = PaperBroker(
+            initial_equity=cfg.ACCOUNT_SIZE,
+            tick_value=CONTRACTS[args.symbol]["tick_value"],
+            tick_size=CONTRACTS[args.symbol]["tick_size"],
+        )
 
     bot = TradingBot(
         broker=broker,
